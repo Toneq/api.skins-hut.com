@@ -11,7 +11,7 @@ class AuthController extends Controller
     protected $authService;
 
     public function __construct(AuthService $authService){
-        $this->middleware('auth:api', ['except' => ['login']]);
+        $this->middleware(['web', 'auth:api'], ['except' => ['login', 'steam_login']]);
         $this->authService = $authService;
     }
 
