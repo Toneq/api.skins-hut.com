@@ -55,8 +55,6 @@ class AuthService
 
         $payloadData = json_decode($ota->data);
 
-        // Log::info('Wczytanie danych: ', $payloadData);
-
         $user = User::where('steamid', $payloadData->steamid)->first();
 
         if ($user) {
@@ -85,36 +83,12 @@ class AuthService
             $user->avatar_hash = $payloadData->avatarhash;
             $user->save();
         }
-
-        OneTokenAccess::where('uuid', $token)->first()->delete();
-
+        $ota->delete();
         $token = JWTAuth::fromUser($user);
         return $this->createNewToken($token);
     }
 
-    public function register($request){
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|between:2,100|unique:users',
-            'email' => 'required|string|email|max:100|unique:users',
-            'password' => 'required|string|confirmed|min:6',
-        ]);
-        if($validator->fails()){
-            return response()->json($validator->errors(), 400);
-        }
-        $user = User::create(array_merge(
-                    $validator->validated(),
-                    ['password' => bcrypt($request->password)]
-                ));
-        return response()->json([
-            'message' => 'User successfully registered'
-            // 'user' => $user
-        ], 201);
-    }
-
     public function logout($request){
-        // stare
-        // auth()->logout();
-        // return response()->json(['message' => 'User successfully signed out']);
         $token = $request->bearerToken(); // Pobierz token z nagłówka Authorization
 
         if (!$token) {
