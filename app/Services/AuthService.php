@@ -14,6 +14,8 @@ class AuthService
     public function steamData($request){
         $userData = $request->all();
 
+        print_r($userData);
+
         $token = JWTAuth::encode($userData);
 
         return $this->createNewToken($token);
