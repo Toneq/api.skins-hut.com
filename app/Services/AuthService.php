@@ -83,7 +83,7 @@ class AuthService
             $user->avatar_hash = $payloadData->avatarhash;
             $user->save();
         }
-        // $ota->delete();
+        $ota->delete();
         $token = JWTAuth::fromUser($user);
         return $this->createNewToken($token);
     }
