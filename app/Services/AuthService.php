@@ -23,11 +23,9 @@ class AuthService
             'avatarfull' => $request->input('avatarfull'),
             'avatarhash' => $request->input('avatarhash'),
         ];
-
-        $payloadFactory = app('Tymon\JWTAuth\PayloadFactory');
-        $payload = $payloadFactory->make($userData);
-
-        $token = JWTAuth::encode($payload);
+        if (!$token = JWTAuth::attempt($userData)) {
+            return response()->json(['error' => ['error' => 'Unauthorized']], 401);
+        }
 
         return $this->createNewToken($token);
     }
