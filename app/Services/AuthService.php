@@ -25,7 +25,7 @@ class AuthService
             'nickname' => $steamUser->getNickname(),
         ]);
 
-        return redirect('https://skins-hut.com/login-steam/' . urlencode($token));
+        return redirect('https://skins-hut.com/login/' . urlencode($token));
     }
 
     public function login($request){        
