@@ -12,6 +12,7 @@ use Tymon\JWTAuth\Exceptions\JWTException;
 use Laravel\Socialite\Facades\Socialite;
 use Tymon\JWTAuth\PayloadFactory;
 use Ramsey\Uuid\Uuid;
+use Illuminate\Support\Facades\Log;
 
 class AuthService
 {
