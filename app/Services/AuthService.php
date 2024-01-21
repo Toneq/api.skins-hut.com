@@ -13,8 +13,17 @@ class AuthService
 {
     public function steamData($request){
         $userData = $request->all();
-        $payload = JWTAuth::getPayloadFactory()->make($userData);
-        $token = JWTAuth::encode($payload);
+
+        $userData = [
+            'steamid' => $request->input('steamid'),
+            'personaname' => $request->input('personaname'),
+            'profileurl' => $request->input('profileurl'),
+            'avatarfull' => $request->input('avatarfull'),
+            'avatarhash' => $request->input('avatarhash'),
+        ];
+
+        $token = JWTAuth::encode($userData);
+
         return $this->createNewToken($token);
     }
 
