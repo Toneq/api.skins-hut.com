@@ -23,9 +23,10 @@ class AuthService
             'avatarfull' => $request->input('avatarfull'),
             'avatarhash' => $request->input('avatarhash'),
         ];
-        if (!$token = JWTAuth::attempt($userData)) {
-            return response()->json(['error' => ['error' => 'Unauthorized']], 401);
-        }
+        // if (!$token = JWTAuth::attempt($userData)) {
+        //     return response()->json(['error' => ['error' => 'Unauthorized']], 401);
+        // }
+        $token = JWTAuth::encode()->withClaims($userData)->getToken();
 
         return $this->createNewToken($token);
     }
