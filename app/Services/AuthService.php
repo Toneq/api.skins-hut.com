@@ -6,10 +6,12 @@ use Illuminate\Support\Facades\Auth;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Payload;
 use App\Models\User;
+use App\Models\OneTokenAccess;
 use Validator;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Laravel\Socialite\Facades\Socialite;
 use Tymon\JWTAuth\PayloadFactory;
+use Ramsey\Uuid\Uuid;
 
 class AuthService
 {
@@ -23,14 +25,16 @@ class AuthService
             'avatarfull' => $request->input('avatarfull'),
             'avatarhash' => $request->input('avatarhash'),
         ];
-        // if (!$token = JWTAuth::attempt($userData)) {
-        //     return response()->json(['error' => ['error' => 'Unauthorized']], 401);
-        // }
-        $payload = JWTAuth::payload()->set('user', $userData);
 
-        $token = JWTAuth::encode($payload);
+        $uuid = Uuid::uuid4();
+        $uuidString = $uuid->toString();
 
-        return $this->createNewToken($token);
+        $ota = new OneTokenAccess;
+        $ota->uuid = $uuidString;
+        $ota->data = json_encode($userData);
+        $ota->save();
+
+        return response()->json(['token' => $uuidString], 200);
     }
 
     public function login($request){        
@@ -43,8 +47,13 @@ class AuthService
         }
     
         try {
-            $decodedToken = JWTAuth::setToken($validator->validated()['token'])->getPayload();
-            $payloadData = $decodedToken->toArray();
+            $ota = OneTokenAccess::where('uuid', $validator->validated()['token']);
+
+            if(!$ota){ 
+                return response()->json(['error' => "Brak autoryzacji"], 403);
+            }
+
+            $payloadData = json_decode($ota->data);
 
             $user = User::where('steamid', $payloadData['steamid'])->first();
 
