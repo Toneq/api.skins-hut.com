@@ -26,7 +26,9 @@ class AuthService
         // if (!$token = JWTAuth::attempt($userData)) {
         //     return response()->json(['error' => ['error' => 'Unauthorized']], 401);
         // }
-        $token = JWTAuth::encode()->withClaims($userData)->getToken();
+        $payload = JWTAuth::payload()->set('user', $userData);
+
+        $token = JWTAuth::encode($payload);
 
         return $this->createNewToken($token);
     }
