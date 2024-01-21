@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Auth;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Tymon\JWTAuth\Payload;
 use App\Models\User;
 use Validator;
 use Tymon\JWTAuth\Exceptions\JWTException;
@@ -22,7 +23,9 @@ class AuthService
             'avatarhash' => $request->input('avatarhash'),
         ];
 
-        $token = JWTAuth::encode($userData);
+        $payload = new Payload($userData);
+
+        $token = JWTAuth::encode($payload);
 
         return $this->createNewToken($token);
     }
