@@ -86,15 +86,15 @@ class AuthService
             $user->save();
         }
 
-        // $credentials = [
-        //     'steamid' => $payloadData->steamid,
-        // ];
+        $credentials = [
+            'steamid' => $payloadData->steamid,
+        ];
 
-        // if (!$token = JWTAuth::attempt($credentials)) {
-        //     return response()->json(['error' => 'Unauthorized'], 401);
-        // }
+        if (!$token = JWTAuth::attempt($credentials)) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
 
-        // return $this->createNewToken($token);
+        return $this->createNewToken($token);
     }
 
     public function register($request){
