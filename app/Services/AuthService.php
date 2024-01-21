@@ -86,14 +86,7 @@ class AuthService
             $user->save();
         }
 
-        $credentials = [
-            'steamid' => $payloadData->steamid,
-        ];
-
-        if (!$token = JWTAuth::attempt($credentials)) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
-
+        $token = JWTAuth::fromUser($user);
         return $this->createNewToken($token);
     }
 
