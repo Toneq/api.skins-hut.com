@@ -86,6 +86,8 @@ class AuthService
             $user->save();
         }
 
+        OneTokenAccess::where('uuid', $token)->first()->delete();
+
         $token = JWTAuth::fromUser($user);
         return $this->createNewToken($token);
     }
