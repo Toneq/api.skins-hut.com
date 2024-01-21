@@ -55,7 +55,7 @@ class AuthService
 
         $payloadData = json_decode($ota->data);
 
-        Log::info('Wczytanie danych: ', $payloadData);
+        // Log::info('Wczytanie danych: ', $payloadData);
 
         $user = User::where('steamid', $payloadData['steamid'])->first();
 
