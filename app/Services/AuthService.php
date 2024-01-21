@@ -16,8 +16,6 @@ use Ramsey\Uuid\Uuid;
 class AuthService
 {
     public function steamData($request){
-        $userData = $request->all();
-
         $userData = [
             'steamid' => $request->input('steamid'),
             'personaname' => $request->input('personaname'),
