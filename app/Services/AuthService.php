@@ -16,7 +16,7 @@ class AuthService
 
         $token = JWTAuth::encode($userData);
 
-        return response()->json(['token' => $token], 200);
+        return $this->createNewToken($token);
     }
 
     public function login($request){        
