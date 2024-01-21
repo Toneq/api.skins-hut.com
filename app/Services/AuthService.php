@@ -44,60 +44,54 @@ class AuthService
             return response()->json(['error' => $validator->errors()], 401);
         }
     
-        try {
-            $ota = OneTokenAccess::where('uuid', $validator->validated()['token']);
+        $ota = OneTokenAccess::where('uuid', $validator->validated()['token']);
 
-            if(!$ota){ 
-                return response()->json(['error' => "Brak autoryzacji"], 403);
+        if(!$ota){ 
+            return response()->json(['error' => "Brak autoryzacji"], 403);
+        }
+
+        $payloadData = json_decode($ota->data);
+
+        Log::info('Wczytanie danych: ', $payloadData);
+
+        $user = User::where('steamid', $payloadData['steamid'])->first();
+
+        if ($user) {
+            $toUpdate = false;
+            if($user->avatar != $payloadData["avatarfull"]){
+                $toUpdate = true;
+                $user->avatar = $payloadData["avatarfull"];
+            }
+            if($user->username != $payloadData["personaname"]){
+                $toUpdate = true;
+                $user->username = $payloadData["personaname"];
+            }
+            if($user->avatar_hash != $payloadData["avatarhash"]){
+                $toUpdate = true;
+                $user->avatar_hash = $payloadData["avatarhash"];
             }
 
-            $payloadData = json_decode($ota->data);
-
-            $user = User::where('steamid', $payloadData['steamid'])->first();
-
-            if ($user) {
-                $toUpdate = false;
-                if($user->avatar != $payloadData["avatarfull"]){
-                    $toUpdate = true;
-                    $user->avatar = $payloadData["avatarfull"];
-                }
-                if($user->username != $payloadData["personaname"]){
-                    $toUpdate = true;
-                    $user->username = $payloadData["personaname"];
-                }
-                if($user->avatar_hash != $payloadData["avatarhash"]){
-                    $toUpdate = true;
-                    $user->avatar_hash = $payloadData["avatarhash"];
-                }
-
-                if($toUpdate){
-                    $user->save();
-                }
-            } else {
-                $user = new User;
-                $user->steamid = $payloadData["steamid"];
-                $user->username = $payloadData["personaname"];
-                $user->avatar = $payloadData["avatarfull"];
-                $user->avatar_hash = $payloadData["avatarhash"];
+            if($toUpdate){
                 $user->save();
             }
-
-            $credentials = [
-                'steamid' => $payloadData['steamid'],
-            ];
-    
-            if (!$token = JWTAuth::attempt($credentials)) {
-                return response()->json(['error' => 'Unauthorized'], 401);
-            }
-    
-            return $this->createNewToken($token);
-        } catch (\Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
-            return response()->json(['error' => 'Token has expired'], 401);
-        } catch (\Tymon\JWTAuth\Exceptions\TokenInvalidException $e) {
-            return response()->json(['error' => 'Invalid token'], 401);
-        } catch (\Tymon\JWTAuth\Exceptions\JWTException $e) {
-            return response()->json(['error' => 'Token absent'], 401);
+        } else {
+            $user = new User;
+            $user->steamid = $payloadData["steamid"];
+            $user->username = $payloadData["personaname"];
+            $user->avatar = $payloadData["avatarfull"];
+            $user->avatar_hash = $payloadData["avatarhash"];
+            $user->save();
         }
+
+        // $credentials = [
+        //     'steamid' => $payloadData['steamid'],
+        // ];
+
+        // if (!$token = JWTAuth::attempt($credentials)) {
+        //     return response()->json(['error' => 'Unauthorized'], 401);
+        // }
+
+        // return $this->createNewToken($token);
     }
 
     public function register($request){
