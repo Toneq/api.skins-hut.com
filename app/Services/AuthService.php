@@ -82,10 +82,14 @@ class AuthService
                 $user->save();
             }
 
-            if (!$token = JWTAuth::attempt($payloadData)) {
+            $credentials = [
+                'steamid' => $payloadData['steamid'],
+            ];
+    
+            if (!$token = JWTAuth::attempt($credentials)) {
                 return response()->json(['error' => 'Unauthorized'], 401);
             }
-
+    
             return $this->createNewToken($token);
         } catch (\Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
             return response()->json(['error' => 'Token has expired'], 401);
