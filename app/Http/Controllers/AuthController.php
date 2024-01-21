@@ -31,11 +31,7 @@ class AuthController extends Controller
         return $this->authService->userProfile($request);
     }
 
-    public function steam_login(){
-        return $this->authService->redirectToSteam();
-    }
-
-    public function steam_callback(){
-        return $this->authService->handleSteamCallback();
+    public function steam_data(Request $request){
+        return $this->authService->steamData($request);
     }
 }

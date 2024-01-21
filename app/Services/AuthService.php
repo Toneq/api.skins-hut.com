@@ -11,21 +11,12 @@ use Laravel\Socialite\Facades\Socialite;
 
 class AuthService
 {
-    public function redirectToSteam()
-    {
-        return Socialite::driver('steam')->redirect();
-    }
+    public function steamData($request){
+        $userData = $request->all();
 
-    public function handleSteamCallback()
-    {
-        $steamUser = Socialite::driver('steam')->user();
+        $token = JWTAuth::encode($userData);
 
-        $token = JWTAuth::encode([
-            'steam_id' => $steamUser->getId(),
-            'nickname' => $steamUser->getNickname(),
-        ]);
-
-        return redirect('https://skins-hut.com/login/' . urlencode($token));
+        return response()->json(['token' => $token], 200);
     }
 
     public function login($request){        
