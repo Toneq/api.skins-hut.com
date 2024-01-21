@@ -44,7 +44,9 @@ class AuthService
             return response()->json(['error' => $validator->errors()], 401);
         }
     
-        $ota = OneTokenAccess::where('uuid', $validator->validated()['token']);
+        $token = $request->input('token');
+
+        $ota = OneTokenAccess::where('uuid', $token);
 
         if(!$ota){ 
             return response()->json(['error' => "Brak autoryzacji"], 403);
