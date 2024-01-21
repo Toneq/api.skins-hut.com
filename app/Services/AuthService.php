@@ -57,21 +57,21 @@ class AuthService
 
         // Log::info('Wczytanie danych: ', $payloadData);
 
-        $user = User::where('steamid', $payloadData['steamid'])->first();
+        $user = User::where('steamid', $payloadData->steamid)->first();
 
         if ($user) {
             $toUpdate = false;
-            if($user->avatar != $payloadData["avatarfull"]){
+            if($user->avatar != $payloadData->avatarfull){
                 $toUpdate = true;
-                $user->avatar = $payloadData["avatarfull"];
+                $user->avatar = $payloadData->avatarfull;
             }
-            if($user->username != $payloadData["personaname"]){
+            if($user->username != $payloadData->personaname){
                 $toUpdate = true;
-                $user->username = $payloadData["personaname"];
+                $user->username = $payloadData->personaname;
             }
-            if($user->avatar_hash != $payloadData["avatarhash"]){
+            if($user->avatar_hash != $payloadData->avatarhash){
                 $toUpdate = true;
-                $user->avatar_hash = $payloadData["avatarhash"];
+                $user->avatar_hash = $payloadData->avatarhash;
             }
 
             if($toUpdate){
@@ -79,15 +79,15 @@ class AuthService
             }
         } else {
             $user = new User;
-            $user->steamid = $payloadData["steamid"];
-            $user->username = $payloadData["personaname"];
-            $user->avatar = $payloadData["avatarfull"];
-            $user->avatar_hash = $payloadData["avatarhash"];
+            $user->steamid = $payloadData->steamid;
+            $user->username = $payloadData->personaname;
+            $user->avatar = $payloadData->avatarfull;
+            $user->avatar_hash = $payloadData->avatarhash;
             $user->save();
         }
 
         // $credentials = [
-        //     'steamid' => $payloadData['steamid'],
+        //     'steamid' => $payloadData->steamid,
         // ];
 
         // if (!$token = JWTAuth::attempt($credentials)) {
