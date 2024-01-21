@@ -9,7 +9,7 @@ use App\Models\User;
 use Validator;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Laravel\Socialite\Facades\Socialite;
-use Tymon\JWTAuth\JWTFactory;
+use Tymon\JWTAuth\PayloadFactory;
 
 class AuthService
 {
@@ -24,7 +24,8 @@ class AuthService
             'avatarhash' => $request->input('avatarhash'),
         ];
 
-        $payload = JWTFactory::make($userData);
+        $payloadFactory = app('Tymon\JWTAuth\PayloadFactory');
+        $payload = $payloadFactory->make($userData);
 
         $token = JWTAuth::encode($payload);
 
