@@ -82,10 +82,11 @@ class AuthService
                 $user->save();
             }
 
-            // return response()->json(['success' => true, 'data' => $userData, 'user' => $user]);
+            if (!$token = JWTAuth::attempt($payloadData)) {
+                return response()->json(['error' => 'Unauthorized'], 401);
+            }
 
-            $refreshedToken = JWTAuth::refresh($validator->validated()['token']);
-            return $this->createNewToken($refreshedToken);
+            return $this->createNewToken($token);
         } catch (\Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
             return response()->json(['error' => 'Token has expired'], 401);
         } catch (\Tymon\JWTAuth\Exceptions\TokenInvalidException $e) {
