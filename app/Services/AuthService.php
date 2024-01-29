@@ -88,7 +88,7 @@ class AuthService
         $customClaims = ['isAdmin' => true]; // Załóżmy, że isAdmin jest polem w modelu User
 
         // Generowanie tokena JWT z dodatkowymi informacjami
-        $token = JWTAuth::claims($customClaims)->fromSubject($user->id);
+        $token = JWTAuth::customClaims($customClaims)->fromSubject($user);
         // $token = JWTAuth::fromUser($user);
         return $this->createNewToken($token);
     }
