@@ -13,6 +13,7 @@ use Laravel\Socialite\Facades\Socialite;
 use Tymon\JWTAuth\PayloadFactory;
 use Ramsey\Uuid\Uuid;
 use Illuminate\Support\Facades\Log;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class AuthService
 {
@@ -84,7 +85,7 @@ class AuthService
             $user->save();
         }
         $ota->delete();
-        $customClaims = ['isAdmin' => 1]; // Załóżmy, że isAdmin jest polem w modelu User
+        $customClaims = ['isAdmin' => true]; // Załóżmy, że isAdmin jest polem w modelu User
 
         // Generowanie tokena JWT z dodatkowymi informacjami
         $token = JWTAuth::claims($customClaims)->fromSubject($user->id);
