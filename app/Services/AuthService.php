@@ -85,11 +85,14 @@ class AuthService
             $user->save();
         }
         $ota->delete();
-        $customClaims = ['isAdmin' => true]; // Załóżmy, że isAdmin jest polem w modelu User
+        $customClaims = ['data' => [
+            "avatar" => $user->avatar,
+            "username" => $user->username,
+            "steamid" => $user->steamid,
+            "avatar_hash" => $user->avatar_hash
+        ]];
 
-        // Generowanie tokena JWT z dodatkowymi informacjami
         $token = JWTAuth::customClaims($customClaims)->fromSubject($user);
-        // $token = JWTAuth::fromUser($user);
         return $this->createNewToken($token);
     }
 
