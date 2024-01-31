@@ -18,6 +18,57 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 class AuthService
 {
     public function steamData($request){
+        $session = $request->input('session');
+
+        $user = User::where('steamid', $request->input('steamid'))->first();
+
+        if ($user) {
+            $toUpdate = false;
+            if($user->avatar != $request->input('avatarfull')){
+                $toUpdate = true;
+                $user->avatar = $request->input('avatarfull');
+            }
+            if($user->username != $request->input('personaname')){
+                $toUpdate = true;
+                $user->username = $request->input('personaname');
+            }
+            if($user->avatar_hash != $request->input('avatarhash')){
+                $toUpdate = true;
+                $user->avatar_hash = $request->input('avatarhash');
+            }
+
+            if($toUpdate){
+                $user->save();
+            }
+        } else {
+            $user = new User;
+            $user->steamid = $request->input('steamid');
+            $user->username = $request->input('personaname');
+            $user->avatar = $request->input('avatarfull');
+            $user->avatar_hash = $request->input('avatarhash');
+            $user->save();
+        }
+
+        $customClaims = ['data' => [
+            "avatar" => $user->avatar,
+            "username" => $user->username,
+            "steamid" => $user->steamid,
+            "avatar_hash" => $user->avatar_hash
+        ]];
+
+        $token = JWTAuth::customClaims($customClaims)->fromSubject($user);
+
+        $ota = new OneTokenAccess;
+        $ota->uuid = $session;
+        $ota->data = $token;
+        $ota->save();
+
+        return $this->createNewToken($token);
+    }
+
+    public function steamDatax($request){
+        // $session = $request->input('session');
+
         $userData = [
             'steamid' => $request->input('steamid'),
             'personaname' => $request->input('personaname'),
@@ -37,7 +88,27 @@ class AuthService
         return response()->json(['token' => $uuidString], 200);
     }
 
-    public function login($request){        
+    public function login($request){
+        $validator = Validator::make($request->all(), [
+            'token' => 'required|string',
+        ]);
+    
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 401);
+        }
+    
+        $token = $request->input('token');
+
+        $ota = OneTokenAccess::where('uuid', $token)->first();
+
+        if(!$ota){ 
+            return response()->json(['error' => "Brak autoryzacji"], 403);
+        }
+
+        return $ota->data;
+    }
+
+    public function loginx($request){        
         $validator = Validator::make($request->all(), [
             'token' => 'required|string',
         ]);
