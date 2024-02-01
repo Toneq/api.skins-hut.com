@@ -14,6 +14,7 @@ use Tymon\JWTAuth\PayloadFactory;
 use Ramsey\Uuid\Uuid;
 use Illuminate\Support\Facades\Log;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use Illuminate\Support\Facades\Redis;
 
 class AuthService
 {
@@ -58,12 +59,15 @@ class AuthService
 
         $token = JWTAuth::customClaims($customClaims)->fromSubject($user);
 
-        $ota = new OneTokenAccess;
-        $ota->uuid = $session;
-        $ota->data = $token;
-        $ota->save();
+        // $ota = new OneTokenAccess;
+        // $ota->uuid = $session;
+        // $ota->data = $token;
+        // $ota->save();
 
-        return $this->createNewToken($token);
+        $tokenJSON = $this->createNewToken($token);
+        Redis::set($session, $tokenJSON);
+
+        return $tokenJSON;
     }
 
     public function steamDatax($request){
@@ -99,13 +103,22 @@ class AuthService
     
         $token = $request->input('token');
 
-        $ota = OneTokenAccess::where('uuid', $token)->first();
+        // $ota = OneTokenAccess::where('uuid', $token)->first();
 
-        if(!$ota){ 
-            return response()->json(['error' => "Brak autoryzacji"], 403);
+        // if(!$ota){ 
+        //     return response()->json(['error' => "Brak autoryzacji"], 403);
+        // }
+
+        // return $ota->data;
+        $value = Redis::get($token);
+
+        if ($value === null) {
+            return response()->json(['message' => 'Nie znaleziono danych dla podanego klucza'], 404);
         }
 
-        return $ota->data;
+        $data = json_decode($value, true);
+
+        return $data['access_token'];
     }
 
     public function loginx($request){        
