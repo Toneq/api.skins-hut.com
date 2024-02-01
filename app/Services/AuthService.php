@@ -116,7 +116,7 @@ class AuthService
             return response()->json(['message' => 'Nie znaleziono danych dla podanego klucza'], 404);
         }
 
-        return $value;
+        return response()->json(['token' => $value], 200);
     }
 
     public function loginx($request){        
