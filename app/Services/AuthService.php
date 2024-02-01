@@ -110,7 +110,7 @@ class AuthService
         // }
 
         // return $ota->data;
-        $value = Redis::get($token);
+        $value = Redis::get("laravel_database_".$token);
 
         if ($value === null) {
             return response()->json(['message' => 'Nie znaleziono danych dla podanego klucza'], 404);
