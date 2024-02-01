@@ -65,7 +65,7 @@ class AuthService
         // $ota->save();
 
         $tokenJSON = $this->createNewToken($token);
-        Redis::set($session, $tokenJSON);
+        Redis::set($session, $token);
 
         return $tokenJSON;
     }
