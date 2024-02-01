@@ -118,7 +118,7 @@ class AuthService
 
         $data = json_decode($value, true);
 
-        return $data['access_token'];
+        return $data;
     }
 
     public function loginx($request){        
