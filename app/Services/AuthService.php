@@ -116,8 +116,6 @@ class AuthService
             return response()->json(['message' => 'Nie znaleziono danych dla podanego klucza'], 404);
         }
 
-        $data = json_decode($value, true);
-
         return $value;
     }
 
