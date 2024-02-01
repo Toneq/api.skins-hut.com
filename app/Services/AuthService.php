@@ -116,6 +116,8 @@ class AuthService
             return response()->json(['message' => 'Nie znaleziono danych dla podanego klucza'], 404);
         }
 
+        Redis::del($token);
+
         return response()->json(['token' => $value], 200);
     }
 
